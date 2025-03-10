@@ -1,4 +1,3 @@
-
 interface SpeechAnalysisResult {
   text: string;
   fillerWords: {
@@ -32,8 +31,8 @@ export const startSpeechRecognition = (
   }
 
   // Initialize speech recognition
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
+  const SpeechRecognitionConstructor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognitionConstructor();
   
   recognition.continuous = true;
   recognition.interimResults = true;

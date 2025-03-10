@@ -1,4 +1,6 @@
 
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Suspense } from 'react';
 
 // Loading state for the Suspense fallback
@@ -24,14 +26,18 @@ const LoadingState = () => (
 );
 
 const Index = () => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    // Redirect to the home page
+    navigate('/home');
+  }, [navigate]);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       <Suspense fallback={<LoadingState />}>
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Welcome to SpeechFlow</h1>
-          <p className="mt-4 text-muted-foreground">
-            Navigate to any page using the links above
-          </p>
+          <h1 className="text-3xl font-bold">Redirecting to SpeechFlow...</h1>
         </div>
       </Suspense>
     </div>

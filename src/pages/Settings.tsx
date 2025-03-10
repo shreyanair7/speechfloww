@@ -4,7 +4,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { fillerWordsDictionary } from '@/utils/speechUtils';
 
 const Settings = () => {
-  const [language, setLanguage] = useState('en-US');
   const [threshold, setThreshold] = useState(0.05);
   const [customFillerWords, setCustomFillerWords] = useState('');
   const [darkMode, setDarkMode] = useState(false);
@@ -15,7 +14,6 @@ const Settings = () => {
     const storedSettings = localStorage.getItem('speechFlowSettings');
     if (storedSettings) {
       const settings = JSON.parse(storedSettings);
-      setLanguage(settings.language || 'en-US');
       setThreshold(settings.threshold || 0.05);
       setCustomFillerWords(settings.customFillerWords || '');
       setDarkMode(settings.darkMode || false);
@@ -24,7 +22,6 @@ const Settings = () => {
 
   const saveSettings = () => {
     const settings = {
-      language,
       threshold,
       customFillerWords,
       darkMode
@@ -40,13 +37,11 @@ const Settings = () => {
 
   const resetSettings = () => {
     const defaultSettings = {
-      language: 'en-US',
       threshold: 0.05,
       customFillerWords: '',
       darkMode: false
     };
     
-    setLanguage(defaultSettings.language);
     setThreshold(defaultSettings.threshold);
     setCustomFillerWords(defaultSettings.customFillerWords);
     setDarkMode(defaultSettings.darkMode);
@@ -72,44 +67,24 @@ const Settings = () => {
         <div className="speechflow-card p-6">
           <h2 className="text-xl font-semibold mb-4">Speech Recognition</h2>
           
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Language</label>
-              <select 
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="w-full p-2 border rounded-md"
-              >
-                <option value="en-US">English (US)</option>
-                <option value="en-GB">English (UK)</option>
-                <option value="es-ES">Spanish</option>
-                <option value="fr-FR">French</option>
-                <option value="de-DE">German</option>
-              </select>
-              <p className="text-xs text-muted-foreground mt-1">
-                The language used for speech recognition
-              </p>
+          <div>
+            <label className="block text-sm font-medium mb-1">Filler Word Threshold</label>
+            <input 
+              type="range" 
+              min="0.01" 
+              max="0.2" 
+              step="0.01"
+              value={threshold}
+              onChange={(e) => setThreshold(parseFloat(e.target.value))}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Low ({threshold * 100}%)</span>
+              <span>High</span>
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">Filler Word Threshold</label>
-              <input 
-                type="range" 
-                min="0.01" 
-                max="0.2" 
-                step="0.01"
-                value={threshold}
-                onChange={(e) => setThreshold(parseFloat(e.target.value))}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Low ({threshold * 100}%)</span>
-                <span>High</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Adjust how sensitive the filler word detection should be
-              </p>
-            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Adjust how sensitive the filler word detection should be
+            </p>
           </div>
         </div>
         

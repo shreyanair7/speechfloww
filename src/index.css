@@ -1,11 +1,10 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 215 33% 98%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -14,17 +13,17 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 221 83% 53%;
+    --primary: 217 92% 22%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96%;
+    --secondary: 217 32% 96%;
     --secondary-foreground: 222 47% 11%;
 
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 215 100% 58%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
@@ -113,4 +112,25 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-muted-foreground/50;
+}
+
+/* SpeechFlow specific styles */
+.speechflow-nav-item {
+  @apply px-4 py-2 rounded-md transition-colors duration-200 flex items-center gap-2 text-foreground hover:bg-primary/10;
+}
+
+.speechflow-nav-item.active {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+.speechflow-card {
+  @apply bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+}
+
+.speechflow-header {
+  @apply bg-primary text-primary-foreground;
+}
+
+.speechflow-gradient {
+  @apply bg-gradient-to-r from-primary to-accent;
 }

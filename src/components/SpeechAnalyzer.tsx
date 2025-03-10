@@ -4,7 +4,6 @@ import RecordButton from './RecordButton';
 import TranscriptView from './TranscriptView';
 import ToneAnalysis from './ToneAnalysis';
 import Dashboard from './Dashboard';
-import HistoryView from './HistoryView';
 import { startSpeechRecognition, stopSpeechRecognition, analyzeSpeech } from '@/utils/speechUtils';
 import { useToast } from "@/components/ui/use-toast";
 
@@ -32,8 +31,6 @@ const SpeechAnalyzer = () => {
       clarity: 0
     }
   });
-  const [recordings, setRecordings] = useState<RecordingEntry[]>([]);
-  const [selectedRecording, setSelectedRecording] = useState<RecordingEntry | null>(null);
   
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const timerRef = useRef<number | null>(null);
@@ -109,7 +106,7 @@ const SpeechAnalyzer = () => {
       const result = analyzeSpeech(transcript, recordingTime);
       setAnalysisResult(result);
       
-      // Save to history
+      // Save to history in localStorage
       const newRecording: RecordingEntry = {
         id: Date.now().toString(),
         date: new Date(),
@@ -119,7 +116,15 @@ const SpeechAnalyzer = () => {
         clarity: result.toneAnalysis.clarity
       };
       
-      setRecordings([newRecording, ...recordings]);
+      // Get existing recordings
+      const storedRecordings = localStorage.getItem('speechFlowRecordings');
+      const recordings = storedRecordings ? JSON.parse(storedRecordings) : [];
+      
+      // Add new recording to the beginning of the array
+      const updatedRecordings = [newRecording, ...recordings];
+      
+      // Save back to localStorage
+      localStorage.setItem('speechFlowRecordings', JSON.stringify(updatedRecordings));
       
       // Show toast
       toast({
@@ -134,21 +139,6 @@ const SpeechAnalyzer = () => {
     }
   };
 
-  // Handle selecting a recording from history
-  const handleSelectRecording = (recording: RecordingEntry) => {
-    setSelectedRecording(recording);
-    
-    // Re-analyze the selected recording for detailed viewing
-    const result = analyzeSpeech(recording.text, recording.duration);
-    setAnalysisResult(result);
-    setTranscript(recording.text);
-  };
-
-  // Handle back to current
-  const handleBackToCurrent = () => {
-    setSelectedRecording(null);
-  };
-
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -160,40 +150,7 @@ const SpeechAnalyzer = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 animate-fade-in">
-      {/* Header */}
-      <div className="mb-8 text-center">
-        {selectedRecording ? (
-          <div className="flex items-center justify-center mb-4">
-            <button
-              onClick={handleBackToCurrent}
-              className="flex items-center text-primary hover:text-primary/80 transition-colors"
-            >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 20 20" 
-                fill="currentColor" 
-                className="w-5 h-5 mr-1"
-              >
-                <path 
-                  fillRule="evenodd" 
-                  d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" 
-                  clipRule="evenodd" 
-                />
-              </svg>
-              Back to current
-            </button>
-          </div>
-        ) : null}
-        
-        <h1 className="text-3xl font-bold tracking-tight">Speech Analyzer</h1>
-        <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
-          {selectedRecording 
-            ? "Viewing past recording from " + new Date(selectedRecording.date).toLocaleString()
-            : "Improve your speaking by analyzing filler words and tone clarity"}
-        </p>
-      </div>
-      
+    <div className="w-full animate-fade-in">
       {/* Main Content */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
         <div className="space-y-8">
@@ -207,15 +164,13 @@ const SpeechAnalyzer = () => {
         </div>
         
         <div className="space-y-8">
-          {!selectedRecording && (
-            <div className="flex justify-center py-6">
-              <RecordButton 
-                isRecording={isRecording} 
-                onToggleRecording={handleToggleRecording}
-                recordingTime={recordingTime}
-              />
-            </div>
-          )}
+          <div className="flex justify-center py-6">
+            <RecordButton 
+              isRecording={isRecording} 
+              onToggleRecording={handleToggleRecording}
+              recordingTime={recordingTime}
+            />
+          </div>
           
           <Dashboard 
             fillerWords={analysisResult.fillerWords}
@@ -223,19 +178,7 @@ const SpeechAnalyzer = () => {
             recordingTime={recordingTime}
             isRecording={isRecording}
           />
-          
-          {!selectedRecording && recordings.length > 0 && (
-            <HistoryView 
-              recordings={recordings} 
-              onSelect={handleSelectRecording}
-            />
-          )}
         </div>
-      </div>
-      
-      {/* Footer */}
-      <div className="text-center text-sm text-muted-foreground py-6 border-t">
-        <p>Use this tool regularly to track your improvement and reduce filler words.</p>
       </div>
     </div>
   );

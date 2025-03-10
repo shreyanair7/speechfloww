@@ -1,18 +1,7 @@
 
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Suspense } from 'react';
-import SpeechAnalyzer from '@/components/SpeechAnalyzer';
-
-const Index = () => {
-  return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-muted/20">
-      <main className="flex-1 py-10">
-        <Suspense fallback={<LoadingState />}>
-          <SpeechAnalyzer />
-        </Suspense>
-      </main>
-    </div>
-  );
-};
 
 // Loading state for the Suspense fallback
 const LoadingState = () => (
@@ -35,5 +24,24 @@ const LoadingState = () => (
     </div>
   </div>
 );
+
+const Index = () => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    // Redirect to the home page
+    navigate('/home');
+  }, [navigate]);
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      <Suspense fallback={<LoadingState />}>
+        <div className="text-center">
+          <h1 className="text-3xl font-bold">Redirecting to SpeechFlow...</h1>
+        </div>
+      </Suspense>
+    </div>
+  );
+};
 
 export default Index;
